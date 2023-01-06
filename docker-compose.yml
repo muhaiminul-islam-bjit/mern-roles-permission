@@ -1,32 +1,32 @@
 version: "3"
 services:
-    db:
-        image: mongo:4.4.0
-        container_name: db
-        tty: true
-        volumes:
-            - ./mongoData:/data/db
-        ports:
-            - 27017:27017
-        restart: on-failure
-    mongoexpressRoles:
-        image: mongo-express:latest
-        container_name: mongoexpressRoles
-        depends_on:
-            - db
-        restart: unless-stopped
-        ports:
-            - 8081:8081
-        environment:
-            ME_CONFIG_MONGODB_URL: mongodb://db:27017/
-    nodeapp:
-        build: ./backend
-        container_name: nodeapp
-        ports:
-            - "3500:3500"
-        volumes:
-          - /app/node_modules
-          - ./backend:/app
-        depends_on:
-            - db
-        restart: on-failure
+  db:
+    image: mongo:4.4.0
+    container_name: db
+    tty: true
+    volumes:
+      - ./mongoData:/data/db
+    ports:
+      - 27017:27017
+    restart: on-failure
+  mongoexpressRoles:
+    image: mongo-express:latest
+    container_name: mongoexpressRoles
+    depends_on:
+      - db
+    restart: unless-stopped
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://db:27017/
+  api:
+    build: ./backend
+    container_name: api
+    ports:
+      - "3500:3500"
+    volumes:
+      - /app/node_modules
+      - ./backend:/app
+    depends_on:
+      - db
+    restart: on-failure
