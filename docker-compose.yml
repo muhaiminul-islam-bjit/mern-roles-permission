@@ -30,3 +30,11 @@ services:
     depends_on:
       - db
     restart: on-failure
+  frontEnd:
+    build: ./client
+    container_name: frontEnd
+    volumes:
+      - /app/node_modules
+      - ./client:/app
+    ports:
+      - 3000:3000
