@@ -30,9 +30,9 @@ services:
     depends_on:
       - db
     restart: on-failure
-  frontEnd:
+  frontend:
     build: ./client
-    container_name: frontEnd
+    container_name: frontend
     volumes:
       - /app/node_modules
       - ./client:/app
