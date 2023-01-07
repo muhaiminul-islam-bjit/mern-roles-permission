@@ -1,6 +1,6 @@
 {
-  "name": "lesson_05-frontend",
-  "version": "0.1.0",
+  "name": "frontend",
+  "version": "1.1.0",
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.1.2",
     "@fortawesome/free-solid-svg-icons": "^6.1.2",
