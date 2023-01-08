@@ -29,7 +29,7 @@ services:
       - ./backend:/app
     depends_on:
       - db
-    restart: on-failure
+    restart: always
   frontend:
     build: ./client
     container_name: frontend
