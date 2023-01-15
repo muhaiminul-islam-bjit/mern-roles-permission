@@ -1,0 +1,19 @@
+.trigger {
+    font-size: 30px;
+    position: absolute;
+    cursor: pointer;
+}
+
+.dash__icons {
+    display: flex;
+}
+
+.dash__logout {
+    font-size: 30px;
+    cursor: pointer;
+    transition: 0.3s all;
+}
+
+.dash__logout:hover{
+    color: red;
+}

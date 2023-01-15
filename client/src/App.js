@@ -1,49 +1,25 @@
-import { Routes, Route } from 'react-router-dom'
-import Layout from './components/Layout'
-import Public from './components/Public'
-import Login from './features/auth/Login';
-import DashLayout from './components/DashLayout'
-import Welcome from './features/auth/Welcome'
-import NotesList from './features/notes/NotesList'
-import UsersList from './features/users/UsersList'
-import EditUser from './features/users/EditUser'
-import NewUserForm from './features/users/NewUserForm'
-import EditNote from './features/notes/EditNote'
-import NewNote from './features/notes/NewNote'
-import Prefetch from './features/auth/Prefetch'
-import PersistLogin from './features/auth/PersistLogin';
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import PrivateRoute from "./components/PrivateRoute";
+import PublicRoute from "./components/PublicRoute";
+import useAuthCheck from "./hooks/useAuthCheck";
+import Conversation from "./pages/Conversation";
+import Inbox from "./pages/Inbox";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 function App() {
-  return (
-    <Routes>
-      <Route path="/" element={<Layout />}>
-        <Route index element={<Public />} />
-        <Route path="login" element={<Login />} />
-
-        <Route element={<PersistLogin />}>
-          <Route element={<Prefetch />}>
-            <Route path="dash" element={<DashLayout />}>
-
-              <Route index element={<Welcome />} />
-
-              <Route path="users">
-                <Route index element={<UsersList />} />
-                <Route path=":id" element={<EditUser />} />
-                <Route path="new" element={<NewUserForm />} />
-              </Route>
-
-              <Route path="notes">
-                <Route index element={<NotesList />} />
-                <Route path=":id" element={<EditNote />} />
-                <Route path="new" element={<NewNote />} />
-              </Route>
-
-            </Route>{/* End Dash */}
-          </Route>
-        </Route>
-
-      </Route>
-    </Routes>
+  const authChecked = useAuthCheck();
+  return !authChecked ? (
+    <div>Checking authentication....</div>
+  ) : (
+    <Router>
+      <Routes>
+        <Route path="/" element={<PrivateRoute><Conversation /></PrivateRoute>} />
+        <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+        <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+        <Route path="/inbox/:id" element={<PrivateRoute><Inbox /></PrivateRoute>} />
+      </Routes>
+    </Router>
   );
 }
 

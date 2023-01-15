@@ -1,24 +1,29 @@
 version: "3"
 services:
-  db:
+  mongo:
     image: mongo:4.4.0
-    container_name: db
-    tty: true
+    container_name: mongo
+    # tty: true
     volumes:
       - ./mongoData:/data/db
     ports:
       - 27017:27017
     restart: on-failure
+    # environment:
+    #   MONGO_INITDB_ROOT_USERNAME: "root"
+    #   MONGO_INITDB_ROOT_PASSWORD: "example"
   mongoexpressRoles:
     image: mongo-express:latest
     container_name: mongoexpressRoles
     depends_on:
-      - db
+      - mongo
     restart: unless-stopped
     ports:
       - 8081:8081
     environment:
-      ME_CONFIG_MONGODB_URL: mongodb://db:27017/
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_URL: mongodb://mongo:27017/
   api:
     build: ./backend
     container_name: api
@@ -28,7 +33,7 @@ services:
       - /app/node_modules
       - ./backend:/app
     depends_on:
-      - db
+      - mongo
     restart: always
   frontend:
     build: ./client
