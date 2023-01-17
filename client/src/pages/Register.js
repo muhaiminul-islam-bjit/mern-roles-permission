@@ -8,6 +8,9 @@ export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
+  const [websiteName, setWebsiteName] = useState("");
+  const [storeName, setstoreName] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [agreed, setAgreed] = useState(false);
   const [error, setError] = useState("");
@@ -20,10 +23,10 @@ export default function Register() {
     console.log(data);
     console.log(responseError);
     if (responseError?.data) {
-      setError(responseError.data);
+      setError(responseError.data.message);
     }
     if (data?.accessToken && data?.user) {
-      navigate("/inbox");
+      navigate("/");
     }
   }, [data, responseError, navigate]);
 
@@ -35,7 +38,7 @@ export default function Register() {
     } else if (!agreed) {
       setError("Please agree with the terms and condition");
     } else {
-      register({ name, email, password });
+      register({ username: name, email, password, phone, websiteName, storeName });
     }
   };
 
@@ -67,7 +70,7 @@ export default function Register() {
                 </label>
                 <input
                   id="name"
-                  name="Name"
+                  name="username"
                   value={name}
                   onChange={(e) => {
                     setName(e.target.value);
@@ -96,6 +99,61 @@ export default function Register() {
                   required
                   className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-violet-500 focus:border-violet-500 focus:z-10 sm:text-sm"
                   placeholder="Email address"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="phone" className="sr-only">
+                  Phone
+                </label>
+                <input
+                  id="phone"
+                  name="phone"
+                  type="number"
+                  autoComplete="phone"
+                  value={phone}
+                  onChange={(e) => {
+                    setPhone(e.target.value);
+                  }}
+                  required
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-violet-500 focus:border-violet-500 focus:z-10 sm:text-sm"
+                  placeholder="Phone"
+                />
+              </div>
+
+              <div>
+                <label htmlFor=" websiteName" className="sr-only">
+                  Website Name
+                </label>
+                <input
+                  id="websiteName"
+                  name="websiteName"
+                  type="text"
+                  value={websiteName}
+                  onChange={(e) => {
+                    setWebsiteName(e.target.value);
+                  }}
+                  required
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-violet-500 focus:border-violet-500 focus:z-10 sm:text-sm"
+                  placeholder="Website Name"
+                />
+              </div>
+
+              <div>
+                <label htmlFor=" storeName" className="sr-only">
+                  Store Name
+                </label>
+                <input
+                  id="storeName"
+                  name="storeName"
+                  type="text"
+                  value={storeName}
+                  onChange={(e) => {
+                    setstoreName(e.target.value);
+                  }}
+                  required
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-violet-500 focus:border-violet-500 focus:z-10 sm:text-sm"
+                  placeholder="Store Name"
                 />
               </div>
 

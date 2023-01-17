@@ -16,11 +16,12 @@ export default function Login() {
 
     useEffect(() => {
         if (responseError?.data) {
-            setError(responseError.data);
+            setError(responseError.data.message);
         }
         if (data?.accessToken && data?.user) {
             navigate("/inbox");
         }
+        
     }, [data, responseError, navigate]);
 
     const handleSubmit = (e) => {

@@ -1,4 +1,4 @@
-import { DesktopOutlined, FileOutlined, LogoutOutlined, MenuFoldOutlined, MenuUnfoldOutlined, PieChartOutlined, TeamOutlined, UserOutlined } from '@ant-design/icons';
+import { DashboardOutlined, DesktopOutlined, FileOutlined, LogoutOutlined, MenuFoldOutlined, MenuUnfoldOutlined, PieChartOutlined, TeamOutlined, UserOutlined } from '@ant-design/icons';
 import { Breadcrumb, Layout, Menu, theme } from 'antd';
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -31,26 +31,29 @@ const Dashboard = ({ children }) => {
     const items = [
         {
             key: '0',
-            icon: <UserOutlined />,
-            label: "Page 1",
+            icon: <DashboardOutlined />,
+            label: "Dashboard",
             onClick: () => { navigate('/') }
         },
         getItem('Option 1', '1', <PieChartOutlined />),
         getItem('Option 2', '2', <DesktopOutlined />),
         getItem('User', 'sub1', <UserOutlined />, [
-            getItem('Tom', '3'),
-            getItem('Bill', '4'),
-            getItem('Alex', '5'),
+            {
+                key: '3',
+                label: "Create New",
+                onClick: () => { navigate('/user/create') }
+            },
         ]),
         getItem('Team', 'sub2', <TeamOutlined />, [getItem('Team 1', '6'), getItem('Team 2', '8')]),
         getItem('Files', '9', <FileOutlined />),
     ];
     const highlight = () => {
-        console.log(selectedKey)
         if (selectedKey === '/') {
-            return ['1']
+            return ['0']
         } else if (selectedKey === '/inbox') {
             return ['0']
+        } else if(selectedKey === '/user/create'){
+            return ['3']
         }
     }
     const dispatch = useDispatch();

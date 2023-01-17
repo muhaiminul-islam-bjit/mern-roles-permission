@@ -2,6 +2,8 @@ const User = require("../models/User");
 const Note = require("../models/Note");
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcrypt");
+const Website = require("../models/Website");
+const Store = require("../models/Store");
 
 /**
  * @desc Get all users
@@ -22,10 +24,22 @@ const getAllUsers = asyncHandler(async (req, res) => {
  * @access Private
  */
 const createNewUser = asyncHandler(async (req, res) => {
-  const { username, password, roles } = req.body;
+  let { username, password, roles, phone, websiteName, storeName } = req.body;
 
-  if (!username || !password || !Array.isArray(roles) || !roles.length) {
-    return res.status(400).json({ message: "All fields are required" });
+  if (!Array.isArray(roles)) {
+    roles = ["SuperAdmin"];
+  }
+
+  if (!username) {
+    return res.status(400).json({ message: "UserName required" });
+  }
+
+  if (!password) {
+    return res.status(400).json({ message: "Password required" });
+  }
+
+  if (!roles.length) {
+    return res.status(400).json({ message: "Roles required" });
   }
 
   const duplicate = await User.findOne({ username });
@@ -33,9 +47,18 @@ const createNewUser = asyncHandler(async (req, res) => {
     return res.status(409).json({ message: "Duplicate username" });
   }
 
+  const websiteObj = { phone, websiteName, active: false };
+  const website = await Website.create(websiteObj);
+
+  const storeObj = { storeName, websiteId: website._id, active: true };
+  const store = await Store.create(storeObj);
+
   const hashedPwd = await bcrypt.hash(password, 10); //salt round
-  const userObject = { username, password: hashedPwd, roles };
+  const userObject = { username, password: hashedPwd, roles, websiteId: website._id, storeId: store._id, };
   const user = await User.create(userObject);
+  console.log(user);
+
+
 
   if (user) {
     res.status(201).json({ message: `New user ${username} created` });

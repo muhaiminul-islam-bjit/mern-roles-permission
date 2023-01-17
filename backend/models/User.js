@@ -9,6 +9,16 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  websiteId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: "Website",
+  },
+  storeId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: "Store",
+  },
   roles: [
     {
       type: String,
