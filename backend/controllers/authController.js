@@ -29,7 +29,8 @@ const login = asyncHandler(async (req, res) => {
 
     const accessToken = generateToken({
         "username": foundUser.username,
-        "roles": foundUser.roles
+        "roles": foundUser.roles,
+        "websiteId": foundUser.websiteId,
     });
 
     // const refreshToken = jwt.sign(
@@ -47,7 +48,13 @@ const login = asyncHandler(async (req, res) => {
     // })
 
     // Send accessToken containing username and roles 
-    res.json({ accessToken, user: foundUser })
+    res.json({
+        accessToken, user: {
+            "username": foundUser.username,
+            "roles": foundUser.roles,
+            "websiteId": foundUser.websiteId,
+        }
+    })
 })
 
 // @desc Refresh

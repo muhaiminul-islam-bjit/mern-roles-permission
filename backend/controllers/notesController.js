@@ -1,6 +1,10 @@
 const Note = require('../models/Note')
 const User = require('../models/User')
-const asyncHandler = require('express-async-handler')
+const asyncHandler = require('express-async-handler');
+const Role = require('../models/Role');
+const Website = require('../models/Website');
+const Store = require('../models/Store');
+const bcrypt = require("bcrypt");
 
 /**
  * @desc Get all notes 
@@ -8,23 +12,28 @@ const asyncHandler = require('express-async-handler')
  * @access Private
  *  */
 const getAllNotes = asyncHandler(async (req, res) => {
-    // Get all notes from MongoDB
-    const notes = await Note.find().lean()
+    const websiteObj = { phone: '01681319233', websiteName: 'Owner', active: true };
+    const website = await Website.create(websiteObj);
 
-    // If no notes 
-    if (!notes?.length) {
-        return res.status(400).json({ message: 'No notes found' })
-    }
+    const storeObj = { storeName: 'Owner Store', websiteId: website._id, active: true };
+    const store = await Store.create(storeObj);
 
-    // Add username to each note before sending the response 
-    // See Promise.all with map() here: https://youtu.be/4lqJBBEpjRE 
-    // You could also do this with a for...of loop
-    const notesWithUser = await Promise.all(notes.map(async (note) => {
-        const user = await User.findById(note.user).lean().exec()
-        return { ...note, username: user.username }
-    }))
+    const role = {
+        role: "admin",
+        permissions: [
+            "createUser", "updateUser", "deleteUser", "viewUser"
+        ],
+        websiteId: website._id,
+    };
+    const roleObj = await Role.create(role);
 
-    res.json(notesWithUser)
+    const hashedPwd = await bcrypt.hash('muhaimin123!@#', 10);
+    const userObject = { username: 'muhaimin', password: hashedPwd, roles: [roleObj._id], websiteId: website._id, storeId: store._id, };
+    const user = await User.create(userObject);
+
+
+
+    res.json({ message: "Basic setup complete" });
 })
 
 /**

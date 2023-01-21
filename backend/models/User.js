@@ -21,8 +21,9 @@ const userSchema = new mongoose.Schema({
   },
   roles: [
     {
-      type: String,
-      default: "Employee",
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: "Role",
     },
   ],
   active: {

@@ -11,11 +11,31 @@ const Store = require("../models/Store");
  * @access Private
  */
 const getAllUsers = asyncHandler(async (req, res) => {
-  const users = await User.find().select("-password").lean();
+  const pageNumber = (parseInt(req.query.pageNumber)) || 0;
+  const limit = parseInt(req.query.limit) || 12;
+  const totalUsers = await User.countDocuments().exec();
+  let startIndex = pageNumber * limit;
+  console.log(pageNumber)
+  const users = await User.find().select("-password").populate('websiteId storeId').skip(startIndex).limit(limit).exec();
   if (!users?.length) {
     return res.status(400).json({ message: "No users found" });
   }
-  res.json(users);
+
+  let formattedUser = users.map((user) => {
+    return {
+      username: user.username,
+      store: user.storeId.storeName,
+      websitePhone: user.websiteId.phone,
+      status: user.active,
+    }
+  })
+  formattedUser.totalUsers = totalUsers;
+  const formattedData = {
+    data: formattedUser,
+    total: totalUsers,
+  }
+  console.log(formattedData)
+  res.json(formattedData);
 });
 
 /**
@@ -26,9 +46,7 @@ const getAllUsers = asyncHandler(async (req, res) => {
 const createNewUser = asyncHandler(async (req, res) => {
   let { username, password, roles, phone, websiteName, storeName } = req.body;
 
-  if (!Array.isArray(roles)) {
-    roles = ["SuperAdmin"];
-  }
+  console.log(req.body);
 
   if (!username) {
     return res.status(400).json({ message: "UserName required" });
@@ -38,7 +56,7 @@ const createNewUser = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "Password required" });
   }
 
-  if (!roles.length) {
+  if (!roles?.length) {
     return res.status(400).json({ message: "Roles required" });
   }
 
@@ -53,12 +71,9 @@ const createNewUser = asyncHandler(async (req, res) => {
   const storeObj = { storeName, websiteId: website._id, active: true };
   const store = await Store.create(storeObj);
 
-  const hashedPwd = await bcrypt.hash(password, 10); //salt round
+  const hashedPwd = await bcrypt.hash(password, 10);
   const userObject = { username, password: hashedPwd, roles, websiteId: website._id, storeId: store._id, };
   const user = await User.create(userObject);
-  console.log(user);
-
-
 
   if (user) {
     res.status(201).json({ message: `New user ${username} created` });
