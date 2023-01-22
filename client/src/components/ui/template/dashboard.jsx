@@ -6,6 +6,7 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   PieChartOutlined,
+  SettingOutlined,
   TeamOutlined,
   UserOutlined,
 } from "@ant-design/icons";
@@ -48,7 +49,7 @@ const Dashboard = ({ children }) => {
         navigate("/");
       },
     },
-    getItem("User", "sub1", <UserOutlined />, [
+    getItem("User", "user", <UserOutlined />, [
       {
         key: "1",
         label: "Create New",
@@ -64,6 +65,15 @@ const Dashboard = ({ children }) => {
         },
       },
     ]),
+    getItem("Settings", "settings", <SettingOutlined />, [
+      {
+        key: "3",
+        label: "Roles",
+        onClick: () => {
+          navigate("/roles");
+        },
+      },
+    ]),
   ];
   const highlight = () => {
     if (selectedKey === "/") {
@@ -72,6 +82,8 @@ const Dashboard = ({ children }) => {
       return ["1"];
     } else if (selectedKey === "/users") {
       return ["2"];
+    }else if (selectedKey === "/roles") {
+      return ["3"];
     }
   };
   const dispatch = useDispatch();

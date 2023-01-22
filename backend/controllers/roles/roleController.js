@@ -6,8 +6,16 @@ const Role = require("../../models/Role");
  * @route GET /roles
  * @access Private
  */
-const getAllRoles = asyncHandler(async () => {
-    const roles = Role.find().exec();
+const getAllRoles = asyncHandler(async (req, res) => {
+    const websiteId = req.websiteId;
+    const roles = await Role.find({ websiteId: websiteId }).exec();
+    // console.log(roles)
+    const formattedRoles = roles.map((item) => ({
+        role: item.role,
+        permissions: item.permissions
+    }));
+
+    res.json({ data: formattedRoles });
 });
 
 const getRolesForSelect = asyncHandler(async (req, res) => {
@@ -23,6 +31,25 @@ const getRolesForSelect = asyncHandler(async (req, res) => {
     res.json(formattedRoles);
 });
 
+const createRole = asyncHandler(async (req, res) => {
+    const { role, permissions } = req.body;
+    const websiteId = req.websiteId;
+    if (!role || !permissions) {
+        return res.status(400).json({ message: 'All fields are required' })
+    }
+
+    const roleCreate = Role.create({ role, permissions, websiteId });
+
+    if (roleCreate) {
+        return res.status(201).json({ message: 'New note created' })
+    } else {
+        return res.status(400).json({ message: 'Invalid note data received' })
+    }
+
+})
+
 module.exports = {
-    getRolesForSelect
+    getRolesForSelect,
+    getAllRoles,
+    createRole
 }

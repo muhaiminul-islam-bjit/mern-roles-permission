@@ -7,6 +7,12 @@ router.use(verifyJWT)
 
 router
   .route("/")
+  .get(roleController.getAllRoles)
+  .post(roleController.createRole);
+
+router
+  .route("/pulldown")
   .get(roleController.getRolesForSelect);
+
 
 module.exports = router;

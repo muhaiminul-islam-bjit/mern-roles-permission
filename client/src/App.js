@@ -5,6 +5,7 @@ import useAuthCheck from "./hooks/useAuthCheck";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Roles from "./pages/role/roles";
 import NewUser from "./pages/user/newUser";
 import Users from "./pages/user/users";
 
@@ -21,6 +22,9 @@ function App() {
         <Route path="users">
           <Route index element={<PrivateRoute><Users /></PrivateRoute>} />
           <Route path="create" element={<PrivateRoute><NewUser /></PrivateRoute>} />
+        </Route>
+        <Route path="roles">
+          <Route index element={<PrivateRoute><Roles /></PrivateRoute>} />
         </Route>
 
         <Route path="/inbox/:id" element={<PrivateRoute><Dashboard /></PrivateRoute>} />

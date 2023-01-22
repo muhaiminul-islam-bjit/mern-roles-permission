@@ -3,7 +3,7 @@ import { Button, Col, Form, Input, Select } from "antd";
 import Error from "../../components/ui/Error";
 import { useRegisterMutation } from "../../features/auth/authApi";
 import { useNavigate } from "react-router-dom";
-import { useGetRolesQuery } from "../../features/roles/rolesApi";
+import { useGetRolesPulldownQuery } from "../../features/roles/rolesApi";
 import { useSelector } from "react-redux";
 
 const NewUser = () => {
@@ -11,7 +11,7 @@ const NewUser = () => {
     useRegisterMutation();
   const authUser = useSelector((state) => state.auth);
   console.log(authUser);
-  const { data: roles } = useGetRolesQuery({});
+  const { data: roles } = useGetRolesPulldownQuery({});
   const navigate = useNavigate();
   const [error, setError] = useState("");
 
@@ -43,16 +43,10 @@ const NewUser = () => {
     <Col className="gutter-row" span={12}>
       <Form
         name="wrap"
-        labelCol={{
-          flex: "110px",
-        }}
         labelAlign="left"
         labelWrap
-        wrapperCol={{
-          flex: 1,
-        }}
-        colon={false}
         onFinish={onFinish}
+        layout="vertical"
       >
         <Form.Item
           label="User Name"
