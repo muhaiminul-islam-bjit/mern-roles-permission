@@ -13,6 +13,7 @@ import { Breadcrumb, Layout, Menu, theme } from "antd";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
+import { apiSlice } from "../../../features/api/apiSlice";
 import { userLoggedOut } from "../../../features/auth/authSlice";
 import Logo from "../atom/logo";
 import "./dashboard.css";
@@ -76,6 +77,7 @@ const Dashboard = ({ children }) => {
   const dispatch = useDispatch();
   const logout = () => {
     dispatch(userLoggedOut());
+    dispatch(apiSlice.util.resetApiState());
     localStorage.clear();
   };
   return (

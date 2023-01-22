@@ -11,7 +11,6 @@ const columns = [
     title: "User Name",
     dataIndex: "username",
     key: "username",
-    render: (text) => <a>{text}</a>,
   },
   {
     title: "store",
@@ -27,6 +26,13 @@ const columns = [
     title: "Status",
     dataIndex: "status",
     key: "status",
+    render: (text) => {
+      return (
+        <Tag color={text ? "green" : "error"}>
+          {text ? "ACTIVE" : "INACTIVE"}
+        </Tag>
+      );
+    },
   },
   {
     title: "Action",
@@ -71,7 +77,12 @@ const Users = () => {
     <div>
       <Title level={2}>User</Title>
       <Container>
-        <Table columns={columns} dataSource={users?.data} loading={isLoading} pagination={{current:1, pageSize:10,  total: users?.total}} />
+        <Table
+          columns={columns}
+          dataSource={users?.data}
+          loading={isLoading}
+          pagination={{ current: 1, pageSize: 10, total: users?.total }}
+        />
       </Container>
     </div>
   );

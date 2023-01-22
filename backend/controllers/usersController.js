@@ -11,12 +11,13 @@ const Store = require("../models/Store");
  * @access Private
  */
 const getAllUsers = asyncHandler(async (req, res) => {
+  const websiteId = req.websiteId;
   const pageNumber = (parseInt(req.query.pageNumber)) || 0;
   const limit = parseInt(req.query.limit) || 12;
   const totalUsers = await User.countDocuments().exec();
   let startIndex = pageNumber * limit;
   console.log(pageNumber)
-  const users = await User.find().select("-password").populate('websiteId storeId').skip(startIndex).limit(limit).exec();
+  const users = await User.find({ websiteId: websiteId }).select("-password").populate('websiteId storeId').skip(startIndex).limit(limit).exec();
   if (!users?.length) {
     return res.status(400).json({ message: "No users found" });
   }

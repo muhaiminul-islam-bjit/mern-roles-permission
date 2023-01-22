@@ -11,9 +11,7 @@ const NewUser = () => {
     useRegisterMutation();
   const authUser = useSelector((state) => state.auth);
   console.log(authUser);
-  const { data: roles } = useGetRolesQuery({
-    websiteId: authUser?.user.websiteId,
-  });
+  const { data: roles } = useGetRolesQuery({});
   const navigate = useNavigate();
   const [error, setError] = useState("");
 
@@ -62,7 +60,7 @@ const NewUser = () => {
           rules={[
             {
               required: true,
-              message: "Please enter Username"
+              message: "Please enter Username",
             },
           ]}
         >
@@ -114,10 +112,7 @@ const NewUser = () => {
             },
           ]}
         >
-          <Input
-            placeholder="Store name"
-            size="large"
-          />
+          <Input placeholder="Store name" size="large" />
         </Form.Item>
 
         <Form.Item

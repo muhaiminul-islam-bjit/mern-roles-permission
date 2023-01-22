@@ -11,9 +11,9 @@ const getAllRoles = asyncHandler(async () => {
 });
 
 const getRolesForSelect = asyncHandler(async (req, res) => {
-    const websiteId = req.query.websiteId;
-    const roles = (await Role.find({ websiteId: websiteId }).exec());
-    const formattedRoles = roles.map((item)=>{
+    const websiteId = req.websiteId;
+    const roles = await Role.find({ websiteId: websiteId }).exec();
+    const formattedRoles = roles.map((item) => {
         return {
             label: item.role,
             value: item._id
