@@ -9,7 +9,6 @@ const Role = require("../../models/Role");
 const getAllRoles = asyncHandler(async (req, res) => {
     const websiteId = req.websiteId;
     const roles = await Role.find({ websiteId: websiteId }).exec();
-    // console.log(roles)
     const formattedRoles = roles.map((item) => ({
         role: item.role,
         permissions: item.permissions

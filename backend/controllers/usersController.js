@@ -28,6 +28,7 @@ const getAllUsers = asyncHandler(async (req, res) => {
       store: user.storeId.storeName,
       websitePhone: user.websiteId.phone,
       status: user.active,
+      id: user._id
     }
   })
   formattedUser.totalUsers = totalUsers;
@@ -45,7 +46,8 @@ const getAllUsers = asyncHandler(async (req, res) => {
  * @access Private
  */
 const createNewUser = asyncHandler(async (req, res) => {
-  let { username, password, roles, phone, websiteName, storeName } = req.body;
+  const websiteId = req.websiteId;
+  let { username, password, roles, storeId } = req.body;
 
   console.log(req.body);
 
@@ -66,14 +68,14 @@ const createNewUser = asyncHandler(async (req, res) => {
     return res.status(409).json({ message: "Duplicate username" });
   }
 
-  const websiteObj = { phone, websiteName, active: false };
-  const website = await Website.create(websiteObj);
+  // const websiteObj = { phone, websiteName, active: false };
+  // const website = await Website.create(websiteObj);
 
-  const storeObj = { storeName, websiteId: website._id, active: true };
-  const store = await Store.create(storeObj);
+  // const storeObj = { storeName, websiteId: website._id, active: true };
+  // const store = await Store.create(storeObj);
 
   const hashedPwd = await bcrypt.hash(password, 10);
-  const userObject = { username, password: hashedPwd, roles, websiteId: website._id, storeId: store._id, };
+  const userObject = { username, password: hashedPwd, roles, websiteId: websiteId, storeId: storeId };
   const user = await User.create(userObject);
 
   if (user) {

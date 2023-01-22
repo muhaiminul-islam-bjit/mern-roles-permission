@@ -21,10 +21,11 @@ app.use(express.json());
 app.use(cookieParser());
 app.use("/", express.static(path.join(__dirname, "public")));
 app.use("/", require("./routes/root"));
-app.use('/auth',require('./routes/authRoutes'));
-app.use('/users',require('./routes/userRoutes'));
+app.use('/auth', require('./routes/authRoutes'));
+app.use('/users', require('./routes/userRoutes'));
 app.use('/notes', require('./routes/noteRoutes'));
 app.use('/roles', require('./routes/roleRoute'));
+app.use('/stores', require('./routes/storeRoutes'));
 
 app.all("*", (req, res) => {
   res.status(404);
@@ -45,6 +46,6 @@ mongoose.connection.once("open", () => {
 });
 
 mongoose.connection.on('error', err => {
-    console.log(err);
-    logEvents(`${err.no}: ${err.code}\t${err.syscall}\t${err.hostname}`, 'mongoErrLog.log')
+  console.log(err);
+  logEvents(`${err.no}: ${err.code}\t${err.syscall}\t${err.hostname}`, 'mongoErrLog.log')
 });

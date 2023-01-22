@@ -1,50 +1,14 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { userLoggedOut } from "../../features/auth/authSlice";
-import { useGetUsersQuery } from "../../features/users/usersApi";
+import {
+  useDeleteUsersMutation,
+  useGetUsersQuery,
+} from "../../features/users/usersApi";
 import { Typography } from "antd";
 import Container from "../../components/ui/atom/container";
 const { Title } = Typography;
 import { Space, Table, Tag } from "antd";
-const columns = [
-  {
-    title: "User Name",
-    dataIndex: "username",
-    key: "username",
-  },
-  {
-    title: "store",
-    dataIndex: "store",
-    key: "store",
-  },
-  {
-    title: "websitePhone",
-    dataIndex: "websitePhone",
-    key: "websitePhone",
-  },
-  {
-    title: "Status",
-    dataIndex: "status",
-    key: "status",
-    render: (text) => {
-      return (
-        <Tag color={text ? "green" : "error"}>
-          {text ? "ACTIVE" : "INACTIVE"}
-        </Tag>
-      );
-    },
-  },
-  {
-    title: "Action",
-    key: "action",
-    render: (_, record) => (
-      <Space size="middle">
-        <a>Invite {record.name}</a>
-        <a>Delete</a>
-      </Space>
-    ),
-  },
-];
 
 const Users = () => {
   const dispatch = useDispatch();
@@ -54,7 +18,7 @@ const Users = () => {
       pageSize: 10,
     },
   });
-  
+
   const {
     data: users,
     isError,
@@ -65,6 +29,8 @@ const Users = () => {
     limit: tableParams.pagination.pageSize,
   });
 
+  const [deleteUserData, { data: userDel }] = useDeleteUsersMutation();
+
   useEffect(() => {
     if (error) {
       if (error.status === 401) {
@@ -73,6 +39,62 @@ const Users = () => {
       }
     }
   }, [error]);
+
+  const deleteUser = (id) => {
+    deleteUserData({ id });
+  };
+
+  const columns = [
+    {
+      title: "Id",
+      dataIndex: "id",
+      key: "id",
+    },
+    {
+      title: "User Name",
+      dataIndex: "username",
+      key: "username",
+    },
+    {
+      title: "store",
+      dataIndex: "store",
+      key: "store",
+    },
+    {
+      title: "websitePhone",
+      dataIndex: "websitePhone",
+      key: "websitePhone",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      render: (text) => {
+        return (
+          <Tag color={text ? "green" : "error"}>
+            {text ? "ACTIVE" : "INACTIVE"}
+          </Tag>
+        );
+      },
+    },
+    {
+      title: "Action",
+      key: "action",
+      render: (_, record) => (
+        <Space size="middle">
+          <a>Invite {record.username}</a>
+          <a
+            onClick={() => {
+              console.log(record);
+              deleteUser(record.id);
+            }}
+          >
+            Delete
+          </a>
+        </Space>
+      ),
+    },
+  ];
 
   return (
     <div>

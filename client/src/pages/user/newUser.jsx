@@ -5,6 +5,7 @@ import { useRegisterMutation } from "../../features/auth/authApi";
 import { useNavigate } from "react-router-dom";
 import { useGetRolesPulldownQuery } from "../../features/roles/rolesApi";
 import { useSelector } from "react-redux";
+import { useGetStorePullDownQuery } from "../../features/store/storeApi";
 
 const NewUser = () => {
   const [register, { data, isLoading, error: responseError }] =
@@ -12,6 +13,7 @@ const NewUser = () => {
   const authUser = useSelector((state) => state.auth);
   console.log(authUser);
   const { data: roles } = useGetRolesPulldownQuery({});
+  const { data: stores } = useGetStorePullDownQuery();
   const navigate = useNavigate();
   const [error, setError] = useState("");
 
@@ -31,8 +33,7 @@ const NewUser = () => {
       email: values.email,
       password: values.password,
       phone: values.phone,
-      websiteName: values.websiteName,
-      storeName: values.storeName,
+      storeId: values.storeId,
       roles: values.roles,
     });
 
@@ -86,27 +87,24 @@ const NewUser = () => {
         </Form.Item>
 
         <Form.Item
-          label="Website Name"
-          name="websiteName"
-          rules={[
-            {
-              required: true,
-            },
-          ]}
-        >
-          <Input size="large" />
-        </Form.Item>
-
-        <Form.Item
           label="Store Name"
-          name="storeName"
+          name="storeId"
           rules={[
             {
               required: true,
             },
           ]}
         >
-          <Input placeholder="Store name" size="large" />
+          <Select
+            showSearch
+            placeholder="Select a store"
+            optionFilterProp="children"
+            filterOption={(input, option) =>
+              (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+            }
+            options={stores}
+            size="large"
+          />
         </Form.Item>
 
         <Form.Item

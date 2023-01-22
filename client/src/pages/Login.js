@@ -1,8 +1,11 @@
+import { Button, Input } from "antd";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logoImage from "../assets/images/logo.svg";
+import Container from "../components/ui/atom/container";
 import Error from "../components/ui/Error";
 import { useLoginMutation } from "../features/auth/authApi";
+import './login.css';
 
 export default function Login() {
     const [email, setEmail] = useState("");
@@ -21,7 +24,7 @@ export default function Login() {
         if (data?.accessToken && data?.user) {
             navigate("/inbox");
         }
-        
+
     }, [data, responseError, navigate]);
 
     const handleSubmit = (e) => {
@@ -36,7 +39,7 @@ export default function Login() {
     };
 
     return (
-        <div className="grid place-items-center h-screen bg-[#F9FAFB">
+        <div className="login__wrapper">
             <div className="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-md w-full space-y-8">
                     <div>
@@ -45,6 +48,8 @@ export default function Login() {
                                 className="mx-auto h-12 w-auto"
                                 src={logoImage}
                                 alt="Learn with sumit"
+                                height="150px"
+                                width="250px"
                             />
                         </Link>
                         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
@@ -60,7 +65,7 @@ export default function Login() {
                                 >
                                     Email address
                                 </label>
-                                <input
+                                <Input
                                     id="email-address"
                                     name="email"
                                     type="text"
@@ -76,7 +81,7 @@ export default function Login() {
                                 <label htmlFor="password" className="sr-only">
                                     Password
                                 </label>
-                                <input
+                                <Input
                                     id="password"
                                     name="password"
                                     type="password"
@@ -92,26 +97,14 @@ export default function Login() {
                             </div>
                         </div>
 
-                        <div className="flex items-center justify-end">
-                            <div className="text-sm">
-                                <Link
-                                    to="/register"
-                                    className="font-medium text-violet-600 hover:text-violet-500"
-                                >
-                                    Register
-                                </Link>
-                            </div>
-                        </div>
-
-                        <div>
-                            <button
-                                type="submit"
-                                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-violet-600 hover:bg-violet-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500"
+                        <Container margin={16}>
+                            <Button
+                                type="default" htmlType="submit"
                                 disabled={isLoading}
                             >
                                 Sign in
-                            </button>
-                        </div>
+                            </Button>
+                            </Container>
 
                         {error !== "" && <Error message={error} />}
                     </form>
