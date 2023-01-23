@@ -1,16 +1,18 @@
 import { Button, Checkbox, Form, Input } from "antd";
 import { useCreateRoleMutation } from "../../features/roles/rolesApi";
 import Error from "../../components/ui/Error";
+import React from "react";
 
 const RoleCreateForm = ({ onSuccess }) => {
   const [create, { data, isLoading, error }] = useCreateRoleMutation();
+  const formRef = React.useRef(null);
 
   const onFinish = (value) => {
-    console.log(value);
     create({
       role: value.role,
       permissions: value.permissions,
     });
+    formRef.current?.resetFields();
     onSuccess();
   };
 
@@ -29,6 +31,7 @@ const RoleCreateForm = ({ onSuccess }) => {
         labelWrap
         onFinish={onFinish}
         layout="vertical"
+        ref={formRef}
       >
         <Form.Item
           label="Role name"

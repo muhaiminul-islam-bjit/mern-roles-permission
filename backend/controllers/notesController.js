@@ -28,7 +28,7 @@ const getAllNotes = asyncHandler(async (req, res) => {
     const roleObj = await Role.create(role);
 
     const hashedPwd = await bcrypt.hash('muhaimin123!@#', 10);
-    const userObject = { username: 'muhaimin', password: hashedPwd, roles: [roleObj._id], websiteId: website._id, storeId: store._id, };
+    const userObject = { username: 'muhaimin', password: hashedPwd, phone: '01681319233', roles: [roleObj._id], websiteId: website._id, storeId: store._id, };
     const user = await User.create(userObject);
 
 

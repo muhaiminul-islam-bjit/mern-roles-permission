@@ -8,7 +8,7 @@ import { useLoginMutation } from "../features/auth/authApi";
 import './login.css';
 
 export default function Login() {
-    const [email, setEmail] = useState("");
+    const [phone, setPhone] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
@@ -33,7 +33,7 @@ export default function Login() {
         setError("");
 
         login({
-            username: email,
+            phone,
             password,
         });
     };
@@ -60,21 +60,21 @@ export default function Login() {
                         <div className="rounded-md shadow-sm -space-y-px">
                             <div>
                                 <label
-                                    htmlFor="email-address"
+                                    htmlFor="phone"
                                     className="sr-only"
                                 >
-                                    Email address
+                                    Phone
                                 </label>
                                 <Input
-                                    id="email-address"
-                                    name="email"
-                                    type="text"
-                                    autoComplete="email"
+                                    id="phone"
+                                    name="phone"
+                                    type="number"
+                                    autoComplete="phone"
                                     required
                                     className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-violet-500 focus:border-violet-500 focus:z-10 sm:text-sm"
                                     placeholder="Email address"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    value={phone}
+                                    onChange={(e) => setPhone(e.target.value)}
                                 />
                             </div>
                             <div>
@@ -104,7 +104,7 @@ export default function Login() {
                             >
                                 Sign in
                             </Button>
-                            </Container>
+                        </Container>
 
                         {error !== "" && <Error message={error} />}
                     </form>

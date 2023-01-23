@@ -47,7 +47,7 @@ const getAllUsers = asyncHandler(async (req, res) => {
  */
 const createNewUser = asyncHandler(async (req, res) => {
   const websiteId = req.websiteId;
-  let { username, password, roles, storeId } = req.body;
+  let { username, password, roles, storeId, phone } = req.body;
 
   console.log(req.body);
 
@@ -63,9 +63,9 @@ const createNewUser = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "Roles required" });
   }
 
-  const duplicate = await User.findOne({ username });
+  const duplicate = await User.findOne({ username, phone });
   if (duplicate) {
-    return res.status(409).json({ message: "Duplicate username" });
+    return res.status(409).json({ message: "Duplicate username or phone" });
   }
 
   // const websiteObj = { phone, websiteName, active: false };
@@ -75,7 +75,7 @@ const createNewUser = asyncHandler(async (req, res) => {
   // const store = await Store.create(storeObj);
 
   const hashedPwd = await bcrypt.hash(password, 10);
-  const userObject = { username, password: hashedPwd, roles, websiteId: websiteId, storeId: storeId };
+  const userObject = { username, password: hashedPwd, roles, websiteId: websiteId, storeId: storeId, phone };
   const user = await User.create(userObject);
 
   if (user) {

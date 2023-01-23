@@ -11,13 +11,13 @@ const generateToken = (id) => {
 // @route POST /auth
 // @access Public
 const login = asyncHandler(async (req, res) => {
-    const { username, password } = req.body
+    const { phone, password } = req.body
 
-    if (!username || !password) {
+    if (!phone || !password) {
         return res.status(400).json({ message: 'All fields are required' })
     }
 
-    const foundUser = await User.findOne({ username }).exec()
+    const foundUser = await User.findOne({ phone }).exec()
 
     if (!foundUser || !foundUser.active) {
         return res.status(401).json({ message: 'Unauthorized' })
