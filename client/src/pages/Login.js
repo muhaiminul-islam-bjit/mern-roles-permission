@@ -22,7 +22,7 @@ export default function Login() {
             setError(responseError.data.message);
         }
         if (data?.accessToken && data?.user) {
-            navigate("/inbox");
+            navigate("/");
         }
 
     }, [data, responseError, navigate]);

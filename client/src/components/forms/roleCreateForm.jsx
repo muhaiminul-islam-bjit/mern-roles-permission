@@ -1,19 +1,24 @@
-import { Button, Checkbox, Form, Input } from "antd";
+import { Button, Checkbox, Form, Input, Tag } from "antd";
 import { useCreateRoleMutation } from "../../features/roles/rolesApi";
-import Error from "../../components/ui/Error";
-import React from "react";
+import React, { useEffect } from "react";
+import { useState } from "react";
 
 const RoleCreateForm = ({ onSuccess }) => {
-  const [create, { data, isLoading, error }] = useCreateRoleMutation();
+  const [create, { data, isSuccess, error: responseError }] =
+    useCreateRoleMutation();
   const formRef = React.useRef(null);
+  const [error, setError] = useState("");
 
   const onFinish = (value) => {
     create({
       role: value.role,
       permissions: value.permissions,
     });
-    formRef.current?.resetFields();
-    onSuccess();
+    if (isSuccess) {
+      formRef.current?.resetFields();
+      onSuccess();
+      setError("");
+    }
   };
 
   const options = [
@@ -22,6 +27,13 @@ const RoleCreateForm = ({ onSuccess }) => {
     { label: "deleteUser", value: "deleteUser" },
     { label: "viewUser", value: "viewUser" },
   ];
+
+  useEffect(() => {
+    if (responseError) {
+      console.log(responseError);
+      setError(responseError.data.message);
+    }
+  }, [data, responseError, error]);
 
   return (
     <div>
@@ -41,6 +53,10 @@ const RoleCreateForm = ({ onSuccess }) => {
               required: true,
               message: "Please enter role name",
             },
+            {
+              pattern: /^\S*$/,
+              message: "Space not allowed",
+            },
           ]}
         >
           <Input size="large" />
@@ -56,7 +72,7 @@ const RoleCreateForm = ({ onSuccess }) => {
             },
           ]}
         >
-          <Checkbox.Group options={options} defaultValue={["Apple"]} />
+          <Checkbox.Group options={options} />
         </Form.Item>
 
         <Form.Item label=" ">
@@ -65,7 +81,7 @@ const RoleCreateForm = ({ onSuccess }) => {
           </Button>
         </Form.Item>
       </Form>
-      {error !== "" && <Error message={error} />}
+      {error !== "" && <Tag color="magenta">{error}</Tag>}
     </div>
   );
 };

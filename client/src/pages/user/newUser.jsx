@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Col, Form, Input, Select } from "antd";
-import Error from "../../components/ui/Error";
+import { Button, Col, Form, Input, Select, Tag } from "antd";
 import { useRegisterMutation } from "../../features/auth/authApi";
 import { useNavigate } from "react-router-dom";
 import { useGetRolesPulldownQuery } from "../../features/roles/rolesApi";
@@ -8,7 +7,7 @@ import { useSelector } from "react-redux";
 import { useGetStorePullDownQuery } from "../../features/store/storeApi";
 
 const NewUser = () => {
-  const [register, { data, isLoading, error: responseError }] =
+  const [register, { data, isSuccess, error: responseError }] =
     useRegisterMutation();
   const authUser = useSelector((state) => state.auth);
   console.log(authUser);
@@ -27,7 +26,6 @@ const NewUser = () => {
   }, [data, responseError, navigate]);
 
   const onFinish = (values) => {
-    setError("");
     register({
       username: values.username,
       email: values.email,
@@ -36,8 +34,10 @@ const NewUser = () => {
       storeId: values.storeId,
       roles: values.roles,
     });
-
-    navigate("/users");
+    if (isSuccess) {
+      navigate("/users");
+      setError("");
+    }
   };
 
   return (
@@ -143,7 +143,7 @@ const NewUser = () => {
           </Button>
         </Form.Item>
       </Form>
-      {error !== "" && <Error message={error} />}
+      {error !== "" && <Tag color="magenta">{error}</Tag>}
     </Col>
   );
 };

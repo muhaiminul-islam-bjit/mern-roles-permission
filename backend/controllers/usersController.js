@@ -12,12 +12,12 @@ const Store = require("../models/Store");
  */
 const getAllUsers = asyncHandler(async (req, res) => {
   const websiteId = req.websiteId;
-  const pageNumber = (parseInt(req.query.pageNumber)) || 0;
+  const pageNumber = (parseInt(req.query.pageNumber) - 1) || 0;
   const limit = parseInt(req.query.limit) || 12;
   const totalUsers = await User.countDocuments().exec();
   let startIndex = pageNumber * limit;
   console.log(pageNumber)
-  const users = await User.find({ websiteId: websiteId }).select("-password").populate('websiteId storeId').skip(startIndex).limit(limit).exec();
+  const users = await User.find({ websiteId: websiteId }).select("-password").populate('websiteId storeId').skip(startIndex).limit(limit).sort({ _id: -1 }).exec();
   if (!users?.length) {
     return res.status(400).json({ message: "No users found" });
   }
@@ -63,9 +63,9 @@ const createNewUser = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "Roles required" });
   }
 
-  const duplicate = await User.findOne({ username, phone });
+  const duplicate = await User.findOne({ $or: [{ username }, { phone }] });
   if (duplicate) {
-    return res.status(409).json({ message: "Duplicate username or phone" });
+    return res.status(400).json({ message: "Duplicate username or phone" });
   }
 
   // const websiteObj = { phone, websiteName, active: false };

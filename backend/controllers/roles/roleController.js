@@ -8,7 +8,7 @@ const Role = require("../../models/Role");
  */
 const getAllRoles = asyncHandler(async (req, res) => {
     const websiteId = req.websiteId;
-    const roles = await Role.find({ websiteId: websiteId }).exec();
+    const roles = await Role.find({ websiteId: websiteId }).sort({ _id: -1 }).exec();
     const formattedRoles = roles.map((item) => ({
         role: item.role,
         permissions: item.permissions
@@ -36,6 +36,15 @@ const createRole = asyncHandler(async (req, res) => {
     if (!role || !permissions) {
         return res.status(400).json({ message: 'All fields are required' })
     }
+
+    const duplicate = await Role.findOne({ role, websiteId });
+    console.log(duplicate)
+
+    if (duplicate) {
+        return res.status(400).json({
+            message: "Duplicate role name"
+        })
+    };
 
     const roleCreate = Role.create({ role, permissions, websiteId });
 

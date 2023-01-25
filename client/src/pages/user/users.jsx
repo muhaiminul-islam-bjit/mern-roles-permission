@@ -7,14 +7,14 @@ import {
 } from "../../features/users/usersApi";
 import { Typography } from "antd";
 import Container from "../../components/ui/atom/container";
-const { Title } = Typography;
 import { Space, Table, Tag } from "antd";
+const { Title } = Typography;
 
 const Users = () => {
   const dispatch = useDispatch();
   const [tableParams, setTableParams] = useState({
     pagination: {
-      current: 0,
+      current: 1,
       pageSize: 10,
     },
   });
@@ -29,6 +29,12 @@ const Users = () => {
     limit: tableParams.pagination.pageSize,
   });
 
+  const handleTableChange = (pagination, filters, sorter) => {
+    setTableParams({
+      pagination,
+    });
+  };
+
   const [deleteUserData, { data: userDel }] = useDeleteUsersMutation();
 
   useEffect(() => {
@@ -38,7 +44,17 @@ const Users = () => {
         localStorage.clear();
       }
     }
-  }, [error]);
+
+    if (users?.data.length) {
+      setTableParams({
+        ...tableParams,
+        pagination: {
+          ...tableParams.pagination,
+          total: users?.total,
+        },
+      });
+    }
+  }, [dispatch, error, users]);
 
   const deleteUser = (id) => {
     deleteUserData({ id });
@@ -104,7 +120,8 @@ const Users = () => {
           columns={columns}
           dataSource={users?.data}
           loading={isLoading}
-          pagination={{ current: 1, pageSize: 10, total: users?.total }}
+          pagination={tableParams.pagination}
+          onChange={handleTableChange}
         />
       </Container>
     </div>
