@@ -17,7 +17,10 @@ const getAllUsers = asyncHandler(async (req, res) => {
   const totalUsers = await User.countDocuments().exec();
   let startIndex = pageNumber * limit;
   console.log(pageNumber)
-  const users = await User.find({ websiteId: websiteId }).select("-password").populate('websiteId storeId').skip(startIndex).limit(limit).sort({ _id: -1 }).exec();
+  const users = await User.find({ websiteId: websiteId })
+    .select("-password").populate('websiteId storeId')
+    .skip(startIndex).limit(limit)
+    .sort({ _id: -1 }).exec();
   if (!users?.length) {
     return res.status(400).json({ message: "No users found" });
   }
@@ -67,12 +70,6 @@ const createNewUser = asyncHandler(async (req, res) => {
   if (duplicate) {
     return res.status(400).json({ message: "Duplicate username or phone" });
   }
-
-  // const websiteObj = { phone, websiteName, active: false };
-  // const website = await Website.create(websiteObj);
-
-  // const storeObj = { storeName, websiteId: website._id, active: true };
-  // const store = await Store.create(storeObj);
 
   const hashedPwd = await bcrypt.hash(password, 10);
   const userObject = { username, password: hashedPwd, roles, websiteId: websiteId, storeId: storeId, phone };
@@ -147,6 +144,7 @@ const deleteUser = asyncHandler(async (req, res) => {
   const user = await User.findById(id).exec();
 
   if (!user) {
+    console.log("muhaimin")
     return res.status(400).json({ message: "User not found" });
   }
 
@@ -154,7 +152,7 @@ const deleteUser = asyncHandler(async (req, res) => {
 
   const reply = `Username ${result.username} with ID ${result._id} deleted`;
   res.json(reply);
-});
+},);
 
 module.exports = {
   getAllUsers,

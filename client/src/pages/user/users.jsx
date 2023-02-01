@@ -5,7 +5,7 @@ import {
   useDeleteUsersMutation,
   useGetUsersQuery,
 } from "../../features/users/usersApi";
-import { Typography } from "antd";
+import { Button, message, Popconfirm, Typography } from "antd";
 import Container from "../../components/ui/atom/container";
 import { Space, Table, Tag } from "antd";
 const { Title } = Typography;
@@ -35,7 +35,24 @@ const Users = () => {
     });
   };
 
-  const [deleteUserData, { data: userDel }] = useDeleteUsersMutation();
+  const [
+    deleteUserData,
+    {
+      isSuccess: deleteSuccess,
+      isError: deleteError,
+      error: deleteErrorMessage,
+    },
+  ] = useDeleteUsersMutation();
+
+  useEffect(() => {
+    if (deleteSuccess) {
+      message.success("Deleted successfully");
+    }
+
+    if (deleteError) {
+      message.error(deleteErrorMessage?.data?.message);
+    }
+  }, [deleteError, deleteSuccess]);
 
   useEffect(() => {
     if (error) {
@@ -56,16 +73,12 @@ const Users = () => {
     }
   }, [dispatch, error, users]);
 
-  const deleteUser = (id) => {
-    deleteUserData({ id });
-  };
+  const deleteUser = (id) =>
+    new Promise((resolve) => {
+      deleteUserData({ id });
+    });
 
   const columns = [
-    {
-      title: "Id",
-      dataIndex: "id",
-      key: "id",
-    },
     {
       title: "User Name",
       dataIndex: "username",
@@ -98,15 +111,15 @@ const Users = () => {
       key: "action",
       render: (_, record) => (
         <Space size="middle">
-          <a>Invite {record.username}</a>
-          <a
-            onClick={() => {
-              console.log(record);
+          <Popconfirm
+            title="Delete"
+            description="Do you really want to delete this ?"
+            onConfirm={() => {
               deleteUser(record.id);
             }}
           >
-            Delete
-          </a>
+            <Button type="dashed">Delete</Button>
+          </Popconfirm>
         </Space>
       ),
     },
