@@ -2,7 +2,7 @@ import { PlusOutlined } from "@ant-design/icons";
 import { Button, Col, Drawer, Row, Space, Table, Tag } from "antd";
 import Title from "antd/es/typography/Title";
 import { useState } from "react";
-import RoleCreateForm from "../../components/forms/roleCreateForm";
+import RoleCreateForm from "../../components/forms/role/roleCreateForm";
 import Container from "../../components/ui/atom/container";
 import { useGetRolesQuery } from "../../features/roles/rolesApi";
 
@@ -50,17 +50,17 @@ const Roles = () => {
 
   const afterRoleCreate = () => {
     setOpen(false);
-  }
-  
+  };
+
   return (
     <div>
-      <Row>
+      <Row align="middle">
         <Col span={20}>
-          <Title level={2}>User</Title>
+          <Title level={2}>Roles</Title>
         </Col>
         <Col span={4}>
           <Button type="primary" onClick={showDrawer} icon={<PlusOutlined />}>
-            New account
+            New role
           </Button>
         </Col>
       </Row>

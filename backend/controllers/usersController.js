@@ -2,8 +2,6 @@ const User = require("../models/User");
 const Note = require("../models/Note");
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcrypt");
-const Website = require("../models/Website");
-const Store = require("../models/Store");
 
 /**
  * @desc Get all users
@@ -14,33 +12,58 @@ const getAllUsers = asyncHandler(async (req, res) => {
   const websiteId = req.websiteId;
   const pageNumber = (parseInt(req.query.pageNumber) - 1) || 0;
   const limit = parseInt(req.query.limit) || 12;
-  const totalUsers = await User.countDocuments().exec();
-  let startIndex = pageNumber * limit;
-  console.log(pageNumber)
-  const users = await User.find({ websiteId: websiteId })
-    .select("-password").populate('websiteId storeId')
+  const search = req.query.search;
+  const startIndex = pageNumber * limit;
+
+
+  const totalUsers = await User.countDocuments({ websiteId: websiteId }).exec();
+  const users = await User.find({
+    websiteId: websiteId, $or: [
+      { "phone": { $regex: '.*' + search + '.*', $options: 'i' } },
+      { "username": { $regex: search, $options: 'i' } },
+    ]
+  })
+    .select("-password").populate('websiteId storeId roles')
     .skip(startIndex).limit(limit)
     .sort({ _id: -1 }).exec();
   if (!users?.length) {
-    return res.status(400).json({ message: "No users found" });
+    res.json({
+      data: [],
+      total: totalUsers,
+    });
   }
 
   let formattedUser = users.map((user) => {
     return {
       username: user.username,
       store: user.storeId.storeName,
-      websitePhone: user.websiteId.phone,
+      phone: user.phone,
       status: user.active,
+      roles: user.roles,
       id: user._id
     }
   })
-  formattedUser.totalUsers = totalUsers;
-  const formattedData = {
+
+  res.json({
     data: formattedUser,
     total: totalUsers,
-  }
-  console.log(formattedData)
-  res.json(formattedData);
+  });
+});
+
+/**
+ * @desc Get user by ID
+ * @route GET /users/getById
+ * @access Private
+ */
+const getUserById = asyncHandler(async (req, res) => {
+  const websiteId = req.websiteId;
+  const userId = req.query.id;
+
+  const user = await User.findOne({ websiteId: websiteId, _id: userId }).populate('roles').select("-password").exec();
+  console.log(user)
+  return res.json({
+    data: user
+  });
 });
 
 /**
@@ -88,14 +111,12 @@ const createNewUser = asyncHandler(async (req, res) => {
  * @access Private
  */
 const updateUser = asyncHandler(async (req, res) => {
-  const { id, username, roles, active, password } = req.body;
+  const { id, roles } = req.body;
 
   if (
     !id ||
-    !username ||
     !Array.isArray(roles) ||
-    !roles.length ||
-    typeof active !== "boolean"
+    !roles.length
   ) {
     return res.status(400).json({ message: "All fields are required" });
   }
@@ -106,18 +127,7 @@ const updateUser = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "User not found" });
   }
 
-  const duplicate = await User.findOne({ username }).lean().exec();
-  if (duplicate && duplicate?._id.toString() !== id) {
-    return res.status(409).json({ message: "Duplicate username" });
-  }
-
-  user.username = username;
   user.roles = roles;
-  user.active = active;
-
-  if (password) {
-    user.password = await bcrypt.hash(password, 10);
-  }
 
   const updatedUser = await user.save();
 
@@ -159,4 +169,5 @@ module.exports = {
   createNewUser,
   updateUser,
   deleteUser,
+  getUserById
 };

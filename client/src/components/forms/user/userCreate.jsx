@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
-import { Button, Col, Form, Input, Select, Tag } from "antd";
-import { useRegisterMutation } from "../../features/auth/authApi";
+import React, { useEffect, useState } from "react";
+import { Button, Form, Input, message, Select, Tag } from "antd";
+import { useRegisterMutation } from "../../../features/auth/authApi";
 import { useNavigate } from "react-router-dom";
-import { useGetRolesPulldownQuery } from "../../features/roles/rolesApi";
+import { useGetRolesPulldownQuery } from "../../../features/roles/rolesApi";
 import { useSelector } from "react-redux";
-import { useGetStorePullDownQuery } from "../../features/store/storeApi";
+import { useGetStorePullDownQuery } from "../../../features/store/storeApi";
 
-const NewUser = () => {
+const UserCreate = ({ onSuccess }) => {
   const [register, { data, isSuccess, error: responseError }] =
     useRegisterMutation();
   const authUser = useSelector((state) => state.auth);
@@ -15,15 +15,24 @@ const NewUser = () => {
   const { data: stores } = useGetStorePullDownQuery();
   const navigate = useNavigate();
   const [error, setError] = useState("");
+  const formRef = React.useRef(null);
 
   useEffect(() => {
+    if (isSuccess) {
+      formRef.current?.resetFields();
+      onSuccess();
+      message.success("Role Created Successfully");
+      setError("");
+    }
+
     if (responseError?.data) {
       setError(responseError.data.message);
     }
     if (data?.accessToken && data?.user) {
       navigate("/");
     }
-  }, [data, responseError, navigate]);
+    console.log("Render test")
+  }, [data, responseError, navigate, isSuccess,]);
 
   const onFinish = (values) => {
     register({
@@ -34,20 +43,19 @@ const NewUser = () => {
       storeId: values.storeId,
       roles: values.roles,
     });
-    if (isSuccess) {
-      navigate("/users");
-      setError("");
-    }
   };
 
+  console.log("unexpected rendering");
+
   return (
-    <Col className="gutter-row" span={12}>
+    <div>
       <Form
         name="wrap"
         labelAlign="left"
         labelWrap
         onFinish={onFinish}
         layout="vertical"
+        ref={formRef}
       >
         <Form.Item
           label="User Name"
@@ -144,8 +152,8 @@ const NewUser = () => {
         </Form.Item>
       </Form>
       {error !== "" && <Tag color="magenta">{error}</Tag>}
-    </Col>
+    </div>
   );
 };
 
-export default NewUser;
+export default UserCreate;

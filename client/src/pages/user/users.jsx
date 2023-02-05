@@ -1,32 +1,75 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { userLoggedOut } from "../../features/auth/authSlice";
+import Container from "../../components/ui/atom/container";
+import { Space, Table, Tag } from "antd";
+import {
+  CloseCircleOutlined,
+  DeleteOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
+import UserCreate from "../../components/forms/user/userCreate";
 import {
   useDeleteUsersMutation,
   useGetUsersQuery,
 } from "../../features/users/usersApi";
-import { Button, message, Popconfirm, Typography } from "antd";
-import Container from "../../components/ui/atom/container";
-import { Space, Table, Tag } from "antd";
-const { Title } = Typography;
+import {
+  Button,
+  Col,
+  Drawer,
+  Input,
+  message,
+  Popconfirm,
+  Row,
+  Typography,
+} from "antd";
+import UpdateRole from "../../components/forms/user/updateRole";
 
 const Users = () => {
+  const { Title } = Typography;
+  const { Search } = Input;
   const dispatch = useDispatch();
+  const [open, setOpen] = useState(false);
+  const [searchText, setSearchText] = useState("");
+  const [content, setContent] = useState();
+  const [userId, setUserId] = useState(null);
   const [tableParams, setTableParams] = useState({
     pagination: {
       current: 1,
       pageSize: 10,
     },
   });
+  const contents = {
+    createUser: "createUser",
+    updateUser: "updateUser",
+  };
+
+  const drawerTitle = {
+    createUser: "Create new user",
+    updateUser: "Update user",
+  };
+
+  const showDrawer = (content) => {
+    setContent(content);
+    setOpen(true);
+  };
+
+  const onClose = () => {
+    setOpen(false);
+  };
+
+  const afterCreate = () => {
+    setOpen(false);
+  };
 
   const {
     data: users,
-    isError,
     isLoading,
     error,
   } = useGetUsersQuery({
     pageNumber: tableParams.pagination.current,
     limit: tableParams.pagination.pageSize,
+    search: searchText,
   });
 
   const handleTableChange = (pagination, filters, sorter) => {
@@ -34,6 +77,33 @@ const Users = () => {
       pagination,
     });
   };
+
+  const onSearch = (value) => {
+    setSearchText(value);
+    setTableParams({
+      ...tableParams,
+      pagination: {
+        ...tableParams.pagination,
+        current: 1,
+      },
+    });
+  };
+
+  const handleClear = () => {
+    setSearchText("");
+    setTableParams({
+      ...tableParams,
+      pagination: {
+        ...tableParams.pagination,
+        current: 1,
+      },
+    });
+  };
+
+  const deleteUser = (id) =>
+    new Promise((resolve) => {
+      deleteUserData({ id });
+    });
 
   const [
     deleteUserData,
@@ -73,11 +143,6 @@ const Users = () => {
     }
   }, [dispatch, error, users]);
 
-  const deleteUser = (id) =>
-    new Promise((resolve) => {
-      deleteUserData({ id });
-    });
-
   const columns = [
     {
       title: "User Name",
@@ -90,9 +155,9 @@ const Users = () => {
       key: "store",
     },
     {
-      title: "websitePhone",
-      dataIndex: "websitePhone",
-      key: "websitePhone",
+      title: "Phone",
+      dataIndex: "phone",
+      key: "phone",
     },
     {
       title: "Status",
@@ -107,10 +172,27 @@ const Users = () => {
       },
     },
     {
+      title: "Roles",
+      dataIndex: "roles",
+      key: "roles",
+      render: (_, { roles }) => (
+        <>
+          {roles.map((role, index) => {
+            let color = "geekblue";
+            return (
+              <Tag color={color} key={index}>
+                {role.role.toUpperCase()}
+              </Tag>
+            );
+          })}
+        </>
+      ),
+    },
+    {
       title: "Action",
       key: "action",
       render: (_, record) => (
-        <Space size="middle">
+        <Space size="small">
           <Popconfirm
             title="Delete"
             description="Do you really want to delete this ?"
@@ -118,16 +200,59 @@ const Users = () => {
               deleteUser(record.id);
             }}
           >
-            <Button type="dashed">Delete</Button>
+            <Button icon={<DeleteOutlined />} type="dashed" danger>
+              Delete
+            </Button>
           </Popconfirm>
+          <Button
+            onClick={() => {
+              setUserId(record.id);
+              showDrawer(contents.updateUser);
+            }}
+            type="link"
+          >
+            Update Role
+          </Button>
         </Space>
       ),
     },
   ];
 
+  const drawerElement = () => {
+    const elements = {
+      createUser: <UserCreate onSuccess={afterCreate} />,
+      updateUser: <UpdateRole id={userId} onSuccess={onClose} />,
+    };
+    return elements[content];
+  };
+
   return (
     <div>
-      <Title level={2}>User</Title>
+      <Row align="middle">
+        <Col span={16}>
+          <Title level={2}>User</Title>
+        </Col>
+        <Col span={4}>
+          <Search
+            placeholder="input search text"
+            allowClear={{
+              clearIcon: <CloseCircleOutlined onClick={handleClear} />,
+            }}
+            onSearch={onSearch}
+            style={{ width: 200 }}
+          />
+        </Col>
+
+        <Col span={4}>
+          <Button
+            type="primary"
+            onClick={() => showDrawer(contents.createUser)}
+            icon={<PlusOutlined />}
+          >
+            New User
+          </Button>
+        </Col>
+      </Row>
       <Container>
         <Table
           columns={columns}
@@ -137,6 +262,20 @@ const Users = () => {
           onChange={handleTableChange}
         />
       </Container>
+      <Drawer
+        title={drawerTitle[content]}
+        width={720}
+        onClose={onClose}
+        open={open}
+        bodyStyle={{ paddingBottom: 80 }}
+        extra={
+          <Space>
+            <Button onClick={onClose}>Cancel</Button>
+          </Space>
+        }
+      >
+        {drawerElement()}
+      </Drawer>
     </div>
   );
 };

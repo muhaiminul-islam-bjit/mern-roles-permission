@@ -11,5 +11,6 @@ router
   .post(usersController.createNewUser)
   .patch(usersController.updateUser)
   .delete(usersController.deleteUser);
+router.route("/getById").get(usersController.getUserById);
 
 module.exports = router;

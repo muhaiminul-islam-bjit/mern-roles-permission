@@ -1,18 +1,15 @@
 import {
   DashboardOutlined,
-  DesktopOutlined,
-  FileOutlined,
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  PieChartOutlined,
   SettingOutlined,
-  TeamOutlined,
   UserOutlined,
+  UserSwitchOutlined,
 } from "@ant-design/icons";
-import { Breadcrumb, Layout, Menu, theme } from "antd";
+import { Avatar, Breadcrumb, Layout, Menu, Popover, Space, theme } from "antd";
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { apiSlice } from "../../../features/api/apiSlice";
 import { userLoggedOut } from "../../../features/auth/authSlice";
@@ -33,6 +30,8 @@ const Dashboard = ({ children }) => {
   const [current, setCurrent] = useState("mail");
   const selectedKey = useLocation().pathname;
   const navigate = useNavigate();
+  const { user } = useSelector((state) => state.auth);
+  console.log(user);
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -52,13 +51,6 @@ const Dashboard = ({ children }) => {
     getItem("User", "user", <UserOutlined />, [
       {
         key: "1",
-        label: "Create New",
-        onClick: () => {
-          navigate("/users/create");
-        },
-      },
-      {
-        key: "2",
         label: "All User",
         onClick: () => {
           navigate("/users");
@@ -67,7 +59,7 @@ const Dashboard = ({ children }) => {
     ]),
     getItem("Settings", "settings", <SettingOutlined />, [
       {
-        key: "3",
+        key: "2",
         label: "Roles",
         onClick: () => {
           navigate("/roles");
@@ -78,12 +70,10 @@ const Dashboard = ({ children }) => {
   const highlight = () => {
     if (selectedKey === "/") {
       return ["0"];
-    } else if (selectedKey === "/users/create") {
-      return ["1"];
     } else if (selectedKey === "/users") {
+      return ["1"];
+    } else if (selectedKey === "/roles") {
       return ["2"];
-    }else if (selectedKey === "/roles") {
-      return ["3"];
     }
   };
   const dispatch = useDispatch();
@@ -92,6 +82,17 @@ const Dashboard = ({ children }) => {
     dispatch(apiSlice.util.resetApiState());
     localStorage.clear();
   };
+
+  const content = (
+    <div>
+      <p>Change Password</p>
+      <Space onClick={logout} style={{cursor: "pointer"}}>
+        <UserSwitchOutlined />
+        <span>Logout</span>
+      </Space>
+    </div>
+  );
+
   return (
     <Layout
       style={{
@@ -120,8 +121,9 @@ const Dashboard = ({ children }) => {
           className="dash__header"
           style={{
             padding: 20,
+            paddingRight: "40px",
             display: "flex",
-            background: "lightsteelblue",
+            background: "#fff",
             justifyContent: "space-between",
           }}
         >
@@ -135,7 +137,17 @@ const Dashboard = ({ children }) => {
             )}
           </div>
           <div className="dash__icons">
-            <LogoutOutlined className="dash__logout" onClick={logout} />
+            <Popover
+              content={content}
+              placement="topLeft"
+              title={user.username}
+              trigger="click"
+            >
+              <Avatar
+                style={{ backgroundColor: "#87d068" }}
+                icon={<UserOutlined />}
+              />
+            </Popover>
           </div>
         </Header>
         <Content

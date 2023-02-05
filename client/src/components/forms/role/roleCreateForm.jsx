@@ -1,5 +1,5 @@
-import { Button, Checkbox, Form, Input, Tag } from "antd";
-import { useCreateRoleMutation } from "../../features/roles/rolesApi";
+import { Button, Checkbox, Form, Input, message, Tag } from "antd";
+import { useCreateRoleMutation } from "../../../features/roles/rolesApi";
 import React, { useEffect } from "react";
 import { useState } from "react";
 
@@ -14,11 +14,6 @@ const RoleCreateForm = ({ onSuccess }) => {
       role: value.role,
       permissions: value.permissions,
     });
-    if (isSuccess) {
-      formRef.current?.resetFields();
-      onSuccess();
-      setError("");
-    }
   };
 
   const options = [
@@ -29,11 +24,17 @@ const RoleCreateForm = ({ onSuccess }) => {
   ];
 
   useEffect(() => {
+    if (isSuccess) {
+      formRef.current?.resetFields();
+      onSuccess();
+      message.success("Role Created Successfully");
+      setError("");
+    }
     if (responseError) {
       console.log(responseError);
       setError(responseError.data.message);
     }
-  }, [data, responseError, error]);
+  }, [data, responseError, error, isSuccess]);
 
   return (
     <div>
