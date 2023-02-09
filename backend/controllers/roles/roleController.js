@@ -10,6 +10,7 @@ const getAllRoles = asyncHandler(async (req, res) => {
     const websiteId = req.websiteId;
     const roles = await Role.find({ websiteId: websiteId }).sort({ _id: -1 }).exec();
     const formattedRoles = roles.map((item) => ({
+        id: item._id,
         role: item.role,
         permissions: item.permissions
     }));
@@ -56,8 +57,25 @@ const createRole = asyncHandler(async (req, res) => {
 
 })
 
+const deleteRole = asyncHandler(async (req, res) => {
+    const websiteId = req.websiteId;
+    const { id } = req.body;
+    console.log(req.body);
+    const role = await Role.findById({ _id: id, websiteId }).exec();
+    
+
+    if (!role) {
+        return res.status(400).json({ message: "Role not found" });
+    }
+
+    const result = await role.deleteOne();
+    const reply = `Role ${result.role} with ID ${result._id} deleted`;
+    res.json(reply);
+})
+
 module.exports = {
     getRolesForSelect,
     getAllRoles,
-    createRole
+    createRole,
+    deleteRole
 }

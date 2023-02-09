@@ -8,7 +8,8 @@ router.use(verifyJWT)
 router
   .route("/")
   .get(roleController.getAllRoles)
-  .post(roleController.createRole);
+  .post(roleController.createRole)
+  .delete(roleController.deleteRole);
 
 router
   .route("/pulldown")

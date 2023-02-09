@@ -3,7 +3,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import PublicRoute from "./components/PublicRoute";
 import useAuthCheck from "./hooks/useAuthCheck";
 import Dashboard from "./pages/Dashboard";
-import Login from "./pages/Login";
+import Login from "./pages/auth/login/Login";
 import Register from "./pages/Register";
 import Roles from "./pages/role/roles";
 import Users from "./pages/user/users";
