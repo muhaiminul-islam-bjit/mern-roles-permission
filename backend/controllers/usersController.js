@@ -3,19 +3,13 @@ const Note = require("../models/Note");
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcrypt");
 
-/**
- * @desc Get all users
- * @route GET /users
- * @access Private
- */
+
 const getAllUsers = asyncHandler(async (req, res) => {
   const websiteId = req.websiteId;
   const pageNumber = (parseInt(req.query.pageNumber) - 1) || 0;
   const limit = parseInt(req.query.limit) || 12;
   const search = req.query.search;
   const startIndex = pageNumber * limit;
-
-
   const totalUsers = await User.countDocuments({ websiteId: websiteId }).exec();
   const users = await User.find({
     websiteId: websiteId, $or: [
@@ -50,11 +44,6 @@ const getAllUsers = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @desc Get user by ID
- * @route GET /users/getById
- * @access Private
- */
 const getUserById = asyncHandler(async (req, res) => {
   const websiteId = req.websiteId;
   const userId = req.query.id;
@@ -66,11 +55,6 @@ const getUserById = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @desc Create new user
- * @route POST /users
- * @access Private
- */
 const createNewUser = asyncHandler(async (req, res) => {
   const websiteId = req.websiteId;
   let { username, password, roles, storeId, phone } = req.body;
@@ -105,13 +89,8 @@ const createNewUser = asyncHandler(async (req, res) => {
   }
 });
 
-/**
- * @desc Update a user
- * @route PATCH /users
- * @access Private
- */
 const updateUser = asyncHandler(async (req, res) => {
-  const { id, roles } = req.body;
+  const { id, roles, storeId } = req.body;
 
   if (
     !id ||
@@ -128,17 +107,13 @@ const updateUser = asyncHandler(async (req, res) => {
   }
 
   user.roles = roles;
+  user.storeId = storeId;
 
   const updatedUser = await user.save();
 
   res.json({ message: `${updatedUser.username} updated` });
 });
 
-/**
- * @desc Delete a user
- * @route DELETE /users
- * @access Private
- */
 const deleteUser = asyncHandler(async (req, res) => {
   const { id } = req.body;
 

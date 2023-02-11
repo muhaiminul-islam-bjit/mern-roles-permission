@@ -1,11 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const Role = require("../../models/Role");
 
-/**
- * @desc Get all roles
- * @route GET /roles
- * @access Private
- */
+
 const getAllRoles = asyncHandler(async (req, res) => {
     const websiteId = req.websiteId;
     const roles = await Role.find({ websiteId: websiteId }).sort({ _id: -1 }).exec();
@@ -16,6 +12,16 @@ const getAllRoles = asyncHandler(async (req, res) => {
     }));
 
     res.json({ data: formattedRoles });
+});
+
+const getById = asyncHandler(async (req, res) => {
+    const websiteId = req.websiteId;
+    const roleId = req.query.id ?? null;
+    if (roleId) {
+        const role = await Role.findById({ _id: roleId, websiteId }).exec();
+        return res.json(role);
+    }
+    return res.json({});
 });
 
 const getRolesForSelect = asyncHandler(async (req, res) => {
@@ -33,13 +39,19 @@ const getRolesForSelect = asyncHandler(async (req, res) => {
 
 const createRole = asyncHandler(async (req, res) => {
     const { role, permissions } = req.body;
+    const id = req.body.id ?? null;
+    let duplicate;
     const websiteId = req.websiteId;
     if (!role || !permissions) {
         return res.status(400).json({ message: 'All fields are required' })
     }
 
-    const duplicate = await Role.findOne({ role, websiteId });
-    console.log(duplicate)
+    if (id) {
+        duplicate = await Role.findOne({ role, websiteId, _id: { $ne: id } });
+        console.log(duplicate);
+    } else {
+        duplicate = await Role.findOne({ role, websiteId });
+    }
 
     if (duplicate) {
         return res.status(400).json({
@@ -47,22 +59,37 @@ const createRole = asyncHandler(async (req, res) => {
         })
     };
 
-    const roleCreate = Role.create({ role, permissions, websiteId });
+    if (id) {
+        const fetchedRole = await Role.findOne({ websiteId, _id: id }).exec();
+        fetchedRole.role = role;
+        fetchedRole.permissions = permissions;
+        const roleUpdate = await fetchedRole.save();
 
-    if (roleCreate) {
-        return res.status(201).json({ message: 'New note created' })
+        if (roleUpdate) {
+            return res.status(201).json({ message: 'Role Updated' })
+        } else {
+            return res.status(400).json({ message: 'Invalid role data received' })
+        }
     } else {
-        return res.status(400).json({ message: 'Invalid note data received' })
+        const roleCreate = Role.create({ role, permissions, websiteId });
+        if (roleCreate) {
+            return res.status(201).json({ message: 'New role created' })
+        } else {
+            return res.status(400).json({ message: 'Invalid role data received' })
+        }
     }
+
+
+
+
 
 })
 
 const deleteRole = asyncHandler(async (req, res) => {
     const websiteId = req.websiteId;
     const { id } = req.body;
-    console.log(req.body);
     const role = await Role.findById({ _id: id, websiteId }).exec();
-    
+
 
     if (!role) {
         return res.status(400).json({ message: "Role not found" });
@@ -77,5 +104,6 @@ module.exports = {
     getRolesForSelect,
     getAllRoles,
     createRole,
-    deleteRole
+    deleteRole,
+    getById
 }

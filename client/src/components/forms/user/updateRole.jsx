@@ -1,6 +1,7 @@
-import { Button, Checkbox, Form, Input, message, Select, Tag } from "antd";
+import { Button, Form, Input, message, Select, Tag } from "antd";
 import React, { useEffect, useState } from "react";
 import { useGetRolesPulldownQuery } from "../../../features/roles/rolesApi";
+import { useGetStorePullDownQuery } from "../../../features/store/storeApi";
 import {
   useGetUserByIdQuery,
   useUpdateUsersMutation,
@@ -13,15 +14,16 @@ const UpdateRole = ({ id, onSuccess }) => {
     error: responseError,
   } = useGetUserByIdQuery({ id });
   const [update, { error: updateError, isSuccess }] = useUpdateUsersMutation();
+  const { data: stores } = useGetStorePullDownQuery();
   const { data: roles } = useGetRolesPulldownQuery({});
   const [error, setError] = useState("");
   const [form] = Form.useForm();
 
   const onFinish = (value) => {
-    console.log("test")
     update({
       id,
       roles: value.roles,
+      storeId: value.storeId,
     });
   };
 
@@ -45,9 +47,10 @@ const UpdateRole = ({ id, onSuccess }) => {
         username: user.data.username,
         phone: user.data.phone,
         roles: userRoles,
+        storeId: user.data.storeId,
       });
-      console.log("Hello");
       setError("");
+      console.log(user.data);
     }
     if (responseError) {
       setError(responseError.data.message);
@@ -82,6 +85,27 @@ const UpdateRole = ({ id, onSuccess }) => {
         </Form.Item>
         <Form.Item label="Phone" name="phone">
           <Input size="large" disabled type="number" />
+        </Form.Item>
+
+        <Form.Item
+          label="Store Name"
+          name="storeId"
+          rules={[
+            {
+              required: true,
+            },
+          ]}
+        >
+          <Select
+            showSearch
+            placeholder="Select a store"
+            optionFilterProp="children"
+            filterOption={(input, option) =>
+              (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+            }
+            options={stores}
+            size="large"
+          />
         </Form.Item>
 
         <Form.Item

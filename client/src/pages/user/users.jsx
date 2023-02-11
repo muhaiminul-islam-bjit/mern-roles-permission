@@ -24,8 +24,10 @@ import {
   Typography,
 } from "antd";
 import UpdateRole from "../../components/forms/user/updateRole";
+import { useNavigate } from "react-router-dom";
 
 const Users = () => {
+  const navigate = useNavigate();
   const { Title } = Typography;
   const { Search } = Input;
   const dispatch = useDispatch();
@@ -130,6 +132,11 @@ const Users = () => {
         dispatch(userLoggedOut());
         localStorage.clear();
       }
+
+      if(error.status === 403){
+        navigate("/unauthorized")
+        console.log(error);
+      }
     }
 
     if (users?.data.length) {
@@ -211,7 +218,7 @@ const Users = () => {
             }}
             type="link"
           >
-            Update Role
+            Update User
           </Button>
         </Space>
       ),

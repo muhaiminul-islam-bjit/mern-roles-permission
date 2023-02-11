@@ -10,13 +10,17 @@ export const rolesApi = apiSlice.injectEndpoints({
       query: ({ }) => `/roles/`,
       providesTags: ["roles"]
     }),
+    getRoleById: builder.query({
+      query: (id) => `/roles/getById?id=${id}`,
+      providesTags: (result, error, arg) => [{ type: "role", id: arg }],
+    }),
     deleteRole: builder.mutation({
       query: (id) => ({
         url: '/roles',
         method: 'DELETE',
         body: { id: id }
       }),
-      invalidatesTags: ["roles","roles-pulldown"]
+      invalidatesTags: ["roles", "roles-pulldown"]
     }),
     createRole: builder.mutation({
       query: (data) => ({
@@ -24,8 +28,8 @@ export const rolesApi = apiSlice.injectEndpoints({
         method: 'POST',
         body: data,
       }),
-      invalidatesTags: ["roles","roles-pulldown"]
+      invalidatesTags: (result, error, arg) => ["roles", "roles-pulldown", { type: 'role', id: arg.id }]
     }),
   }),
 });
-export const { useGetRolesPulldownQuery, useGetRolesQuery, useCreateRoleMutation, useDeleteRoleMutation } = rolesApi;
+export const { useGetRolesPulldownQuery, useGetRolesQuery, useCreateRoleMutation, useDeleteRoleMutation, useGetRoleByIdQuery } = rolesApi;

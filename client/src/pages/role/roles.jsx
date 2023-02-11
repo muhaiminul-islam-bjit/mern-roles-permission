@@ -21,6 +21,10 @@ import {
 
 const Roles = () => {
   const { data: roles, isError, isLoading, error } = useGetRolesQuery({});
+  const [roleId, setRoleId] = useState("");
+  const [drawerTitle, setDrawerTitle] = useState("");
+  const [open, setOpen] = useState(false);
+
   const [
     deleteRole,
     {
@@ -29,9 +33,8 @@ const Roles = () => {
       error: deleteErrorMessage,
     },
   ] = useDeleteRoleMutation();
-  const [open, setOpen] = useState(false);
 
-  const showDrawer = () => {
+  const showDrawer = (content) => {
     setOpen(true);
   };
 
@@ -88,6 +91,16 @@ const Roles = () => {
               Delete
             </Button>
           </Popconfirm>
+          <Button
+            onClick={() => {
+              setRoleId(record.id);
+              setDrawerTitle("Update Role");
+              showDrawer();
+            }}
+            type="link"
+          >
+            Update Role
+          </Button>
         </Space>
       ),
     },
@@ -100,17 +113,24 @@ const Roles = () => {
           <Title level={2}>Roles</Title>
         </Col>
         <Col span={4}>
-          <Button type="primary" onClick={showDrawer} icon={<PlusOutlined />}>
+          <Button
+            type="primary"
+            onClick={() => {
+              showDrawer();
+              setRoleId(null);
+              setDrawerTitle("New Role");
+            }}
+            icon={<PlusOutlined />}
+          >
             New role
           </Button>
         </Col>
       </Row>
-
       <Container>
         <Table columns={columns} dataSource={roles?.data} loading={isLoading} />
       </Container>
       <Drawer
-        title="Create a new role"
+        title={drawerTitle}
         width={720}
         onClose={onClose}
         open={open}
@@ -124,7 +144,7 @@ const Roles = () => {
           </Space>
         }
       >
-        <RoleCreateForm onSuccess={afterRoleCreate} />
+        <RoleCreateForm id={roleId} onSuccess={afterRoleCreate} />
       </Drawer>
     </div>
   );

@@ -34,6 +34,8 @@ const UserCreate = ({ onSuccess }) => {
     console.log("Render test")
   }, [data, responseError, navigate, isSuccess,]);
 
+  console.log(stores);
+
   const onFinish = (values) => {
     register({
       username: values.username,
@@ -44,8 +46,6 @@ const UserCreate = ({ onSuccess }) => {
       roles: values.roles,
     });
   };
-
-  console.log("unexpected rendering");
 
   return (
     <div>

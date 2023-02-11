@@ -15,5 +15,7 @@ router
   .route("/pulldown")
   .get(roleController.getRolesForSelect);
 
+  router.route("/getById").get(roleController.getById);
+
 
 module.exports = router;

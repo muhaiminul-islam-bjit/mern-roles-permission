@@ -7,6 +7,7 @@ import Login from "./pages/auth/login/Login";
 import Register from "./pages/Register";
 import Roles from "./pages/role/roles";
 import Users from "./pages/user/users";
+import UnAuthorized from "./pages/auth/unauthorized";
 
 function App() {
   const authChecked = useAuthCheck();
@@ -25,6 +26,9 @@ function App() {
         </Route>
         <Route path="roles">
           <Route index element={<PrivateRoute><Roles /></PrivateRoute>} />
+        </Route>
+        <Route path="unauthorized">
+          <Route index element={<PrivateRoute><UnAuthorized /></PrivateRoute>} />
         </Route>
       </Routes>
     </Router>
