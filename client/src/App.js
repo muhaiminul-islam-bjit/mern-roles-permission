@@ -15,7 +15,9 @@ function App() {
   ) : (
     <Router>
       <Routes>
-        <Route path="/" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+        <Route path="/">
+          <Route index element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+        </Route>
         <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
         <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
         <Route path="users">
@@ -24,8 +26,6 @@ function App() {
         <Route path="roles">
           <Route index element={<PrivateRoute><Roles /></PrivateRoute>} />
         </Route>
-
-        <Route path="/inbox/:id" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
       </Routes>
     </Router>
   );
