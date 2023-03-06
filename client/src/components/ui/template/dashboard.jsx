@@ -65,6 +65,13 @@ const Dashboard = ({ children }) => {
           navigate("/roles");
         },
       },
+      {
+        key: "3",
+        label: "Stores",
+        onClick: () => {
+          navigate("/stores");
+        },
+      },
     ]),
   ];
   const highlight = () => {
@@ -74,6 +81,8 @@ const Dashboard = ({ children }) => {
       return ["1"];
     } else if (selectedKey === "/roles") {
       return ["2"];
+    } else if (selectedKey === "/stores") {
+      return ["3"];
     }
   };
   const dispatch = useDispatch();
@@ -86,7 +95,7 @@ const Dashboard = ({ children }) => {
   const content = (
     <div>
       <p>Change Password</p>
-      <Space onClick={logout} style={{cursor: "pointer"}}>
+      <Space onClick={logout} style={{ cursor: "pointer" }}>
         <UserSwitchOutlined />
         <span>Logout</span>
       </Space>

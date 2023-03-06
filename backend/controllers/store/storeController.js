@@ -30,8 +30,6 @@ const getAllStorePulldown = asyncHandler(async (req, res) => {
         }
     });
 
-    console.log(formattedStores)
-
     res.json(formattedStores);
 });
 
